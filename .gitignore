@@ -1,0 +1,5 @@
+plugin/
+undo/
+session/
+.DS_Store
+*.swp
