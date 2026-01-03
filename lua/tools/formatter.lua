@@ -1,25 +1,3 @@
-local formatters = require "lvim.lsp.null-ls.formatters"
-
-formatters.setup {
-  {
-    -- Angular config with prettier
-    command = "prettierd",
-    filetypes = { 
-      "html", 
-      "css", 
-      "scss", 
-      "less", 
-      "javascript", 
-      "typescript", 
-      "typescriptreact",
-      "json"
-    },
-  },
-
-  -- Rust with integrated rustfmt 
-  { command = "rustfmt", filetypes = { "rust" } },
-}
-
 lvim.lsp.on_attach_callback = function(client, bufnr)
   -- set rust_analyzer
   if client.name == "rust_analyzer" then
