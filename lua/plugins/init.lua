@@ -55,6 +55,8 @@ return {
         "angular", -- WICHTIG für Angular Templates!
         "rust",
         "scss",
+        "dockerfile",
+        "yaml",
       },
       highlight = {
         enable = true, -- Aktiviert das bessere Highlighting

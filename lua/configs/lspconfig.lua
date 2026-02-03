@@ -4,7 +4,16 @@ local capabilities = require("nvchad.configs.lspconfig").capabilities
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "ts_ls", "angularls", "rust_analyzer", "tailwindcss" }
+local servers = {
+  "html",
+  "cssls",
+  "ts_ls",
+  "angularls",
+  "rust_analyzer",
+  "tailwindcss",
+  "docker_ls",
+  "docker_compose_language_service",
+}
 
 for _, lsp in ipairs(servers) do
   -- Prüfen, ob wir auf Neovim 0.11+ sind (wo der Fehler auftritt)
