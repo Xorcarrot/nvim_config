@@ -15,6 +15,8 @@ return {
         json = { "prettier" },
 
         rust = { "rustfmt" },
+        c = { "clang_format" },
+        cpp = { "clang_format" },
       },
 
       -- formatting trigger

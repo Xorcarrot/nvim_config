@@ -1,39 +1,49 @@
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
-
 local lspconfig = require "lspconfig"
 
+-- Only "simple" servers in the loop (no special cmd/filetypes)
 local servers = {
   "html",
   "cssls",
-  "ts_ls",
+  "tsserver",
   "angularls",
   "rust_analyzer",
   "tailwindcss",
-  "docker_ls",
-  "docker_compose_language_service",
+  "dockerls",
+  "clangd", -- C/C++
 }
 
 for _, lsp in ipairs(servers) do
-  -- Prüfen, ob wir auf Neovim 0.11+ sind (wo der Fehler auftritt)
   if vim.fn.has "nvim-0.11" == 1 then
-    -- === NEUER WEG (Nvim 0.11+) ===
-    -- Wir schreiben die Config direkt in die Vim-Interne Tabelle
     vim.lsp.config[lsp] = {
       on_attach = on_attach,
       on_init = on_init,
       capabilities = capabilities,
     }
-    -- Server global aktivieren
     vim.lsp.enable(lsp)
   else
-    -- === ALTER WEG (Nvim 0.10 und älter) ===
-    -- Fallback, damit es auch auf Stable-Versionen läuft
     lspconfig[lsp].setup {
       on_attach = on_attach,
       on_init = on_init,
       capabilities = capabilities,
     }
   end
+end
+
+-- docker-compose language server (special case: needs stdio + explicit filetypes)
+local compose_cfg = {
+  on_attach = on_attach,
+  on_init = on_init,
+  capabilities = capabilities,
+  cmd = { "docker-compose-langserver", "--stdio" },
+  filetypes = { "yaml" },
+}
+
+if vim.fn.has "nvim-0.11" == 1 then
+  vim.lsp.config.docker_compose_language_service = compose_cfg
+  vim.lsp.enable "docker_compose_language_service"
+else
+  lspconfig.docker_compose_language_service.setup(compose_cfg)
 end
