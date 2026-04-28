@@ -32,6 +32,21 @@ for _, lsp in ipairs(servers) do
   end
 end
 
+local angular_cfg = {
+  on_attach = on_attach,
+  on_init = on_init,
+  capabilities = capabilities,
+  cmd = {
+    "ngserver",
+    "--stdio",
+    "--tsProbeLocations",
+    vim.fn.getcwd(),
+    "--ngProbeLocations",
+    vim.fn.getcwd(),
+  },
+  filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+}
+
 -- docker-compose language server (special case: needs stdio + explicit filetypes)
 local compose_cfg = {
   on_attach = on_attach,

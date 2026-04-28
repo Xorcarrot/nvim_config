@@ -2,30 +2,9 @@ return {
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
-    opts = {
-      -- settings to format
-      formatters_by_ft = {
-        lua = { "stylua" },
-
-        html = { "prettier" },
-        css = { "prettier" },
-        scss = { "prettier" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        json = { "prettier" },
-
-        rust = { "rustfmt" },
-        c = { "clang_format" },
-        cpp = { "clang_format" },
-      },
-
-      -- formatting trigger
-      format_on_save = {
-        lsp_fallback = true,
-        async = false,
-        timeout_ms = 1000,
-      },
-    },
+    opts = function()
+      return require "conform"
+    end,
   },
 
   -- Language Server
@@ -48,6 +27,7 @@ return {
       ensure_installed = {
         "vim",
         "lua",
+        "batch",
         "vimdoc",
         "html",
         "css",

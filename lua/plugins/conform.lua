@@ -1,16 +1,25 @@
 local options = {
   formatters_by_ft = {
+    -- Lua
     lua = { "stylua" },
 
     -- Web / Angular (Prettier)
     html = { "prettier" },
     css = { "prettier" },
+    scss = { "prettier" },
     javascript = { "prettier" },
     typescript = { "prettier" },
     json = { "prettier" },
 
+    -- C / C++
+    c = { "clang-format" }, -- Beachte den Bindestrich statt Unterstrich (Standardname)
+    cpp = { "clang-format" },
+
     -- Rust
     rust = { "rustfmt" },
+
+    -- Other Stuff
+    dosbatch = { "beautysh" },
   },
 
   -- Autosave aktivieren
