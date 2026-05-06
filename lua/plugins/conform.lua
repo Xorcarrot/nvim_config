@@ -1,33 +1,27 @@
 local options = {
-  formatters_by_ft = {
-    -- Lua
-    lua = { "stylua" },
+"stevearc/conform.nvim",
+  opts = {
+    format_on_save = {
+      lsp_fallback = true,
+      timeout_ms = 500,
+    },
 
-    -- Web / Angular (Prettier)
-    html = { "prettier" },
-    css = { "prettier" },
-    scss = { "prettier" },
-    javascript = { "prettier" },
-    typescript = { "prettier" },
-    json = { "prettier" },
+    formatters_by_ft = {
+      lua = { "stylua" },
+      javascript = { "prettier" },
+      typescript = { "prettier" },
+      json = { "prettier" },
+      html = { "prettier" },
+      css = { "prettier" },
+      scss = { "prettier" },
 
-    -- C / C++
-    c = { "clang-format" }, -- Beachte den Bindestrich statt Unterstrich (Standardname)
-    cpp = { "clang-format" },
+      c = { "clang-format" },
+      cpp = { "clang-format" },
 
-    -- Rust
-    rust = { "rustfmt" },
+      rust = { "rustfmt" },
 
-    -- Other Stuff
-    dosbatch = { "beautysh" },
-  },
-
-  -- Autosave aktivieren
-  format_on_save = {
-    -- Timeout in Millisekunden (Zeit, die er wartet bevor er aufgibt)
-    timeout_ms = 500,
-    -- Falls kein expliziter Formatter (wie Prettier) da ist, nutze den LSP
-    lsp_fallback = true,
+      dosbatch = { "beautysh" },
+    },
   },
 }
 
