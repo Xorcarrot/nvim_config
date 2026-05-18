@@ -7,8 +7,7 @@ local lspconfig = require "lspconfig"
 local servers = {
   "html",
   "cssls",
-  "tsserver",
-  "angularls",
+  "ts_ls",
   "rust_analyzer",
   "tailwindcss",
   "dockerls",
@@ -32,6 +31,7 @@ for _, lsp in ipairs(servers) do
   end
 end
 
+-- angular language server (special case: needs explicit ngserver cmd + filetypes)
 local angular_cfg = {
   on_attach = on_attach,
   on_init = on_init,
@@ -57,8 +57,11 @@ local compose_cfg = {
 }
 
 if vim.fn.has "nvim-0.11" == 1 then
+  vim.lsp.config.angularls = angular_cfg
+  vim.lsp.enable "angularls"
   vim.lsp.config.docker_compose_language_service = compose_cfg
   vim.lsp.enable "docker_compose_language_service"
 else
+  lspconfig.angularls.setup(angular_cfg)
   lspconfig.docker_compose_language_service.setup(compose_cfg)
 end

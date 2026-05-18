@@ -3,7 +3,7 @@ return {
     "stevearc/conform.nvim",
     event = "BufWritePre",
     opts = function()
-      return require "conform"
+      return require "configs.conform"
     end,
   },
 
