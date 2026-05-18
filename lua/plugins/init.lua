@@ -22,6 +22,10 @@ return {
   -- Syntax Highlighting
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master", -- NvChad v2.5 + this config use the legacy nvim-treesitter API.
+    -- Upstream switched the default branch to `main` (a full rewrite), which has no
+    -- `nvim-treesitter.configs.setup`, ignores `ensure_installed`, and breaks
+    -- `:TSUpdate`/`:TSInstall` here. Pin to master until NvChad ships main-branch support.
     event = "BufReadPost", -- Lädt es, sobald du eine Datei öffnest
     opts = {
       ensure_installed = {

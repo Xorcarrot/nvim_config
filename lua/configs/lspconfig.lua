@@ -31,20 +31,14 @@ for _, lsp in ipairs(servers) do
   end
 end
 
--- angular language server (special case: needs explicit ngserver cmd + filetypes)
+-- angular language server: only override attach hooks. Upstream lsp/angularls.lua
+-- already computes correct ngserver probe paths from node_modules and ships the
+-- right filetypes (typescript, html, htmlangular, typescriptreact) plus
+-- root_markers (angular.json, nx.json). Overriding cmd here broke probe resolution.
 local angular_cfg = {
   on_attach = on_attach,
   on_init = on_init,
   capabilities = capabilities,
-  cmd = {
-    "ngserver",
-    "--stdio",
-    "--tsProbeLocations",
-    vim.fn.getcwd(),
-    "--ngProbeLocations",
-    vim.fn.getcwd(),
-  },
-  filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
 }
 
 -- docker-compose language server (special case: needs stdio + explicit filetypes)

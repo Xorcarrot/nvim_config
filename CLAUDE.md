@@ -10,7 +10,7 @@ A personal Neovim configuration built on top of **NvChad v2.5** (branch `v2.5`),
 
 `init.lua` is the single entrypoint and runs in this order:
 
-1. Sets `base46_cache`, `<leader>` = space, clipboard provider = `xclip`.
+1. Sets `base46_cache`, `<leader>` = space, `clipboard = unnamedplus` (Neovim picks the provider — `xclip` on this machine).
 2. Clones `lazy.nvim` (stable branch) if missing.
 3. `lazy.setup` loads `NvChad/NvChad` (`import = "nvchad.plugins"`) **and** any user plugin specs in `lua/plugins/`.
 4. `dofile`s the cached base46 highlight files (`defaults`, `statusline`) — these only exist after NvChad has built them, so a fresh clone needs `:Lazy sync` to succeed before colors work.
@@ -34,9 +34,9 @@ This "require NvChad's version, then add yours" pattern is the convention — ke
 - On `nvim-0.11+` it uses the new `vim.lsp.config[name] = {...}` + `vim.lsp.enable(name)` API.
 - On older versions it falls back to `lspconfig[name].setup{...}`.
 
-When adding a server, add it to the `servers` table for the simple case. For servers needing a custom `cmd` or `filetypes` (current examples: `angular_cfg`, `compose_cfg` for `docker_compose_language_service`), build the config table and branch on `has("nvim-0.11")` the same way.
+When adding a server, add it to the `servers` table for the simple case. For servers needing per-server overrides (current examples: `angular_cfg`, `compose_cfg` for `docker_compose_language_service`), build the config table and branch on `has("nvim-0.11")` the same way.
 
-Currently enabled in the simple loop: `html`, `cssls`, `ts_ls`, `rust_analyzer`, `tailwindcss`, `dockerls`, `clangd`. Registered separately with custom `cmd`: `angularls` (uses `ngserver` with project-cwd probe paths) and `docker_compose_language_service`.
+Currently enabled in the simple loop: `html`, `cssls`, `ts_ls`, `rust_analyzer`, `tailwindcss`, `dockerls`, `clangd`. Registered separately: `angularls` (attach hooks only; upstream `lsp/angularls.lua` handles cmd/probe paths/filetypes — do NOT override `cmd` here or ngserver will crash with "Failed to resolve '@angular/language-service'") and `docker_compose_language_service` (custom `cmd` + `filetypes`).
 
 ## Formatting
 
@@ -51,6 +51,8 @@ Lua style is locked by `.stylua.toml`: 2-space indent, 120 col width, double quo
 `lua/autocmds.lua` adds:
 - `.tsx` → `typescriptreact`, `.jsx` → `javascriptreact`
 - `docker-compose.y(a)ml` → `yaml` (so `docker_compose_language_service` attaches via its `filetypes = { "yaml" }`)
+- Any `*.html` inside a project that has an `angular.json` walking up from the file (stops at `$HOME`) is forced to `htmlangular`. Covers `*.component.html` and any other Angular template — built-in nvim filetype detection misses cases.
+- `vim.treesitter.language.register("angular", "htmlangular")` — the tree-sitter parser is named `angular` but Angular templates use filetype `htmlangular`. Without this alias, highlighting silently falls back to the html parser (no `@if`/`@for`/`ng-content` highlighting).
 
 ## Custom keymaps (in addition to NvChad defaults)
 
@@ -64,7 +66,17 @@ Defined in `lua/mappings.lua`:
 
 - `:Lazy sync` — install/update plugins (required after first clone before themes load).
 - `:Mason` — install LSP servers/formatters listed above (servers in `lspconfig.lua`, formatters in `conform.lua` must be on `$PATH`).
-- `:TSUpdate` — refresh treesitter parsers (ensure-installed list in `lua/plugins/init.lua`).
+- `:TSUpdate` — refresh treesitter parsers (ensure-installed list in `lua/plugins/init.lua`). `:TSInstall <lang>` to add one-off.
 - `stylua .` — manual lua format using repo's `.stylua.toml`.
 
 `lazy-lock.json` is committed; treat it like a lockfile (commit changes from `:Lazy sync` deliberately).
+
+## nvim-treesitter is pinned to `branch = "master"`
+
+Upstream switched the repo's default branch to `main`, which is a full rewrite with a different API: no `nvim-treesitter.configs.setup`, no `ensure_installed` auto-install, and `:TSInstall`/`:TSUpdate` behave differently. NvChad v2.5 targets the legacy (master) API, so `lua/plugins/init.lua` pins `branch = "master"`. Symptoms if the pin is lost:
+
+- `:TSInstall <lang>` and `:TSUpdate` produce no output.
+- `:checkhealth nvim-treesitter` shows only the 7 bundled parsers (`c, lua, markdown, markdown_inline, query, vim, vimdoc`); custom parsers like `angular` never appear.
+- Angular templates fall back to html highlighting (no `@if`, `@for`, `ng-content` colors).
+
+Recovery: ensure `branch = "master"` is on the spec, run `:Lazy sync`, **restart Neovim** (Lua module cache holds the old main-branch modules), then `:TSInstall ...`.
