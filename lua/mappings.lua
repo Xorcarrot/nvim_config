@@ -21,4 +21,10 @@ end, { desc = "Toggle Floating Terminal" })
 -- Terminal (Normal Mode)
 map("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit Terminal Mode" })
 
+-- Toggle LSP inlay hints for the current buffer
+map("n", "<leader>ih", function()
+  local buf = vim.api.nvim_get_current_buf()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = buf }, { bufnr = buf })
+end, { desc = "Toggle inlay hints" })
+
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")

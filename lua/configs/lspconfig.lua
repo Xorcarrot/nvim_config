@@ -14,20 +14,58 @@ local servers = {
   "clangd", -- C/C++
 }
 
+-- ts_ls and rust_analyzer need explicit settings to emit inlay hints (clangd
+-- emits them out of the box; the others in this list don't support them).
+local ts_inlay = {
+  includeInlayParameterNameHints = "literals",
+  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+  includeInlayFunctionParameterTypeHints = true,
+  includeInlayVariableTypeHints = true,
+  includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+  includeInlayPropertyDeclarationTypeHints = true,
+  includeInlayFunctionLikeReturnTypeHints = true,
+  includeInlayEnumMemberValueHints = true,
+}
+
+local server_settings = {
+  ts_ls = {
+    settings = {
+      typescript = { inlayHints = ts_inlay },
+      javascript = { inlayHints = ts_inlay },
+    },
+  },
+  rust_analyzer = {
+    settings = {
+      ["rust-analyzer"] = {
+        inlayHints = {
+          bindingModeHints = { enable = false },
+          chainingHints = { enable = true },
+          closingBraceHints = { enable = true, minLines = 25 },
+          closureReturnTypeHints = { enable = "never" },
+          lifetimeElisionHints = { enable = "never", useParameterNames = false },
+          maxLength = 25,
+          parameterHints = { enable = true },
+          reborrowHints = { enable = "never" },
+          renderColons = true,
+          typeHints = { enable = true, hideClosureInitialization = false, hideNamedConstructor = false },
+        },
+      },
+    },
+  },
+}
+
 for _, lsp in ipairs(servers) do
+  local cfg = vim.tbl_deep_extend("force", {
+    on_attach = on_attach,
+    on_init = on_init,
+    capabilities = capabilities,
+  }, server_settings[lsp] or {})
+
   if vim.fn.has "nvim-0.11" == 1 then
-    vim.lsp.config[lsp] = {
-      on_attach = on_attach,
-      on_init = on_init,
-      capabilities = capabilities,
-    }
+    vim.lsp.config[lsp] = cfg
     vim.lsp.enable(lsp)
   else
-    lspconfig[lsp].setup {
-      on_attach = on_attach,
-      on_init = on_init,
-      capabilities = capabilities,
-    }
+    lspconfig[lsp].setup(cfg)
   end
 end
 
