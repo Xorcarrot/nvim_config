@@ -8,14 +8,16 @@ local servers = {
   "html",
   "cssls",
   "ts_ls",
-  "rust_analyzer",
   "tailwindcss",
   "dockerls",
   "clangd", -- C/C++
 }
 
--- ts_ls and rust_analyzer need explicit settings to emit inlay hints (clangd
--- emits them out of the box; the others in this list don't support them).
+-- rust_analyzer is intentionally NOT here: rustaceanvim (lua/plugins/dap.lua)
+-- owns the Rust LSP + DAP setup. Running both would double-attach rust_analyzer.
+
+-- ts_ls needs explicit settings to emit inlay hints (clangd emits them out of
+-- the box; the others in this list don't support them).
 local ts_inlay = {
   includeInlayParameterNameHints = "literals",
   includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -32,24 +34,6 @@ local server_settings = {
     settings = {
       typescript = { inlayHints = ts_inlay },
       javascript = { inlayHints = ts_inlay },
-    },
-  },
-  rust_analyzer = {
-    settings = {
-      ["rust-analyzer"] = {
-        inlayHints = {
-          bindingModeHints = { enable = false },
-          chainingHints = { enable = true },
-          closingBraceHints = { enable = true, minLines = 25 },
-          closureReturnTypeHints = { enable = "never" },
-          lifetimeElisionHints = { enable = "never", useParameterNames = false },
-          maxLength = 25,
-          parameterHints = { enable = true },
-          reborrowHints = { enable = "never" },
-          renderColons = true,
-          typeHints = { enable = true, hideClosureInitialization = false, hideNamedConstructor = false },
-        },
-      },
     },
   },
 }

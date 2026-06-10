@@ -53,9 +53,20 @@ return {
     },
   },
 
+  -- LaTeX
   {
-    "github/copilot.vim",
-    lazy = false,
-    config = function() end,
+    "lervag/vimtex",
+    lazy = false, -- VimTeX empfiehlt, nicht lazy zu laden
+    init = function()
+      -- latexmk ist Standard; schreibt foo.pdf direkt neben foo.tex (wird bei jedem Build überschrieben)
+      vim.g.vimtex_compiler_method = "latexmk"
+
+      -- Headless/SSH: kein lokaler Viewer. PDF landet im synchronisierten Ordner (Google Drive).
+      -- view_method nur relevant falls man je \lv lokal/per X-Forwarding aufruft.
+      vim.g.vimtex_view_method = "zathura"
+
+      -- Verhindert, dass sich nach Fehlern nervige Quickfix-Fenster ungewollt öffnen
+      vim.g.vimtex_quickfix_mode = 0
+    end,
   },
 }
