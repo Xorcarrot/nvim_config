@@ -13,48 +13,15 @@ return {
       local dapui = require "dapui"
 
       ----------------------------------------------------------------------
-      -- codelldb-Adapter (C / C++ und – via rustaceanvim – Rust)
+      -- Rust: Adapter UND Configuration kommen komplett von rustaceanvim.
       ----------------------------------------------------------------------
-      -- Adapter bleibt registriert: rustaceanvim findet ihn hierüber bzw. über
-      -- den Mason-Pfad und nutzt ihn für sein Rust-DAP-Setup.
-      -- Rust-CONFIGURATION bewusst NICHT hier definieren: rustaceanvim baut sie
-      -- selbst (korrektes Sysroot, cargo-Build, passende codelldb-Settings).
-      -- Rust debuggen daher über  :RustLsp debuggables  starten, nicht über
-      -- dap.continue() mit einer handgepflegten Config.
-      dap.adapters.codelldb = {
-        type = "server",
-        port = "${port}",
-        executable = {
-          command = vim.fn.stdpath "data" .. "/mason/bin/codelldb",
-          args = { "--port", "${port}" },
-        },
-      }
-
-      ----------------------------------------------------------------------
-      -- Angular / TypeScript / JavaScript  ->  js-debug-adapter (pwa-node)
-      ----------------------------------------------------------------------
-      dap.adapters["pwa-node"] = {
-        type = "server",
-        host = "localhost",
-        port = "${port}",
-        executable = {
-          command = vim.fn.stdpath "data" .. "/mason/bin/js-debug-adapter",
-          args = { "${port}" },
-        },
-      }
-
-      dap.configurations.typescript = {
-        {
-          name = "Attach to Chrome (Angular, Port 9222)",
-          type = "pwa-node",
-          request = "attach",
-          port = 9222,
-          cwd = "${workspaceFolder}",
-          sourceMaps = true,
-          skipFiles = { "<node_internals>/**", "node_modules/**" },
-        },
-      }
-      dap.configurations.javascript = dap.configurations.typescript
+      -- Hier bewusst KEIN dap.adapters.codelldb registrieren: rustaceanvim
+      -- legt nur dann seinen eigenen (Mason-codelldb mit korrektem --liblldb)
+      -- an, wenn der Key noch frei ist — ein manueller Eintrag würde ihn
+      -- verdecken. Rust debuggen über  :RustLsp debuggables  (siehe <leader>dc),
+      -- nicht über dap.continue() mit einer handgepflegten Config.
+      -- Für C/C++-Debugging müsste man hier wieder einen codelldb-Adapter
+      -- plus dap.configurations.c/cpp anlegen.
 
       ----------------------------------------------------------------------
       -- UI + Auto-Open/Close-Listener (hier registriert, damit sie sicher
@@ -80,7 +47,12 @@ return {
   -- Rust: automatisches DAP-Setup + erweiterte LSP-Features (ersetzt rust_analyzer via lspconfig)
   {
     "mrcjkb/rustaceanvim",
-    version = "^4",
-    ft = { "rust" },
+    -- ^8 ist die letzte Major-Reihe für Neovim 0.11 (v9 verlangt 0.12).
+    -- NICHT auf ^4 zurückpinnen: 4.26.1 (Juli 2024) ist zu alt für
+    -- rust-analyzer/Neovim von 2026 und nutzt entfernte/deprecated APIs.
+    version = "^8",
+    -- Upstream-Empfehlung: kein ft/event-Lazy-Loading — das Plugin ist
+    -- intern bereits lazy und braucht sein ftplugin beim ersten Rust-Buffer.
+    lazy = false,
   },
 }
