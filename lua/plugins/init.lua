@@ -31,7 +31,6 @@ return {
       ensure_installed = {
         "vim",
         "lua",
-        "batch",
         "vimdoc",
         "html",
         "css",

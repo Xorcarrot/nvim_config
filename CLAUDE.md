@@ -36,11 +36,11 @@ This "require NvChad's version, then add yours" pattern is the convention — ke
 
 When adding a server, add it to the `servers` table for the simple case. For servers needing per-server overrides (current examples: `angular_cfg`, `compose_cfg` for `docker_compose_language_service`), build the config table and branch on `has("nvim-0.11")` the same way.
 
-Currently enabled in the simple loop: `html`, `cssls`, `ts_ls`, `rust_analyzer`, `tailwindcss`, `dockerls`, `clangd`. Registered separately: `angularls` (attach hooks only; upstream `lsp/angularls.lua` handles cmd/probe paths/filetypes — do NOT override `cmd` here or ngserver will crash with "Failed to resolve '@angular/language-service'") and `docker_compose_language_service` (custom `cmd` + `filetypes`).
+Currently enabled in the simple loop: `html`, `cssls`, `ts_ls`, `tailwindcss`, `dockerls`, `clangd`. `rust_analyzer` is owned by rustaceanvim (`lua/plugins/dap.lua`), not lspconfig. Registered separately: `angularls` (attach hooks only; upstream `lsp/angularls.lua` handles cmd/probe paths/filetypes — do NOT override `cmd` here or ngserver will crash with "Failed to resolve '@angular/language-service'") and `docker_compose_language_service` (custom `cmd` + `filetypes`).
 
 ## Formatting
 
-`conform.nvim` runs on `BufWritePre` with `format_on_save` (lsp_fallback, 500ms timeout). Mapping in `lua/plugins/conform.lua`:
+`conform.nvim` runs on `BufWritePre` with `format_on_save` (lsp_fallback, 500ms timeout). Mapping in `lua/configs/conform.lua`:
 
 - `stylua` for lua, `prettier` for web (js/ts/json/html/css/scss), `clang-format` for c/cpp, `rustfmt` for rust, `beautysh` for `dosbatch`.
 
